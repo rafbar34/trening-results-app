@@ -1,40 +1,32 @@
 import React, { useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../../constants/localStorageKeys';
 import { createData, fetchData } from '../../services/localStorageServices';
+import { setName, setAge, setWeight, setHeight, setLevel, setActivity } from '../../features/RegisterInformations/RegisterInformations';
 
 
 export const RegisterPage = () => {
-    const info = useSelector((state) => state.informations)
-    const [name, setName] = useState();
-    const [age, setAge] = useState();
-    const [weight, setWeight] = useState();
-    const [height, setHeight] = useState();
-    const [level, setLevel] = useState();
-    const [activity, setActivity] = useState();
 
-    const informations = [
-        { title: 'name', changer: setName, placeholder: info.name, type: 'text', value: name },
-        { title: 'age', changer: setAge, placeholder: info.age, type: 'numeric', value: age },
-        { title: 'weight', changer: setWeight, placeholder: info.weight, type: 'numeric', value: weight },
-        { title: 'height', changer: setHeight, placeholder: info.height, type: 'numeric', value: height },
-        { title: 'level', changer: setLevel, placeholder: info.level, type: 'numeric', value: level },
-        { title: 'activity', changer: setActivity, placeholder: info.activity, type: 'numeric', value: activity }
-    ]
-    console.log(informations)
-    const data = {
-        name: name,
-        age: age,
-        weight: weight,
-        height: height,
-        level: level,
-        activity: activity
+    const data = useSelector((state) => state.informations)
+    const dispatch = useDispatch();
+
+    const handleChanges = (e, state) => {
+        dispatch(state(e))
     }
+    const registerInformations = [
+        { title: 'name', changer: setName, handleChange: handleChanges, type: 'text', value: data.name },
+        { title: 'age', changer: setAge, handleChange: handleChanges, type: 'numeric', value: data.age },
+        { title: 'weight', changer: setWeight, handleChange: handleChanges, type: 'numeric', value: data.weight },
+        { title: 'height', changer: setHeight, handleChange: handleChanges, type: 'numeric', value: data.height },
+        { title: 'level', changer: setLevel, handleChange: handleChanges, type: 'numeric', value: data.level },
+        { title: 'activity', changer: setActivity, handleChange: handleChanges, type: 'numeric', value: data.activity }
+    ]
     const handleSubmit = (data) => {
         createData(register, data);
         fetchData(register);
     }
+
     return (
         <View
             style={{
@@ -43,8 +35,9 @@ export const RegisterPage = () => {
             }}
         >
             <View style={{ justifyContent: 'center', alignItems: 'center', height: '20%' }}><Text style={{ color: 'white', fontSize: 18 }}>Logo</Text></View>
-            {informations.map((information) =>
-                <View key={information.title} style={{
+            {registerInformations.map((registerInformation) =>
+            (
+                <View key={registerInformation.title} style={{
                     height: '10%',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -53,7 +46,7 @@ export const RegisterPage = () => {
 
                 }}>
                     <Text style={{ color: 'white', width: '30%', fontSize: 18, }}>
-                        {information.title}:
+                        {registerInformation.title}:
                     </Text>
                     <TextInput
                         style={{
@@ -64,13 +57,16 @@ export const RegisterPage = () => {
                             padding: 10,
                             color: 'white',
                         }}
-                        onChangeText={information.changer}
-                        value={information.value}
-                        placeholder={information.placeholder}
-                        keyboardType={information.type}
+                        onChangeText={(e) => registerInformation.handleChange(e, registerInformation.changer)}
+                        value={registerInformation.value}
+                        placeholder={`please enter your ${registerInformation.title}`}
+                        placeholderTextColor="#FFF"
+                        keyboardType={registerInformation.type}
                     />
-                </View>)}
-            <Button title='test' onPress={() => handleSubmit(data)} />
+                </View>))}
+            <View style={{ marginTop: 40 }}>
+                <Button title='Submit' onPress={() => handleSubmit(data)} />
+            </View>
         </View>
     )
 }
