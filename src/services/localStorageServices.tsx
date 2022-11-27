@@ -16,6 +16,7 @@ export const sendData = async (name:string, data:object) => {
 export const fetchData = async (name:string) =>{
         const DataString= await AsyncStorage.getItem(name)
         const data =  DataString != null ? JSON.parse(DataString) : null;
+        console.log(data);
 return data
       }
 export const clearAll  = async () =>{
